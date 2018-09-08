@@ -18,11 +18,10 @@ const getVoices = () => {
   voices.forEach(voice => {
     const option = document.createElement("option");
 
-    option.innerHTML = voice.name + `(${voice.lang})`;
+    option.textContent = voice.name + "(" + voice.lang + ")";
 
-    option["data-lang"] = voice.lang;
-    option["data-name"] = voice.name;
-
+    option.setAttribute("data-lang", voice.lang);
+    option.setAttribute("data-name", voice.name);
     voiceSelect.appendChild(option);
   });
 };
@@ -34,7 +33,7 @@ if (synth.onvoiceschanged !== undefined) {
 
 const speak = () => {
   if (synth.speaking) {
-    console.error("Already Speaking");
+    console.error("Already speaking...");
     return;
   }
   if (textInput.value !== "") {
@@ -42,17 +41,17 @@ const speak = () => {
 
     // Speak end
     speakText.onend = e => {
-      console.log("Done...");
+      console.log("Done speaking...");
     };
 
     //Speak err
     speakText.onerror = e => {
-      console.error("Somehting went wrong!");
+      console.error("Something went wrong");
     };
 
     //Selected voice
-    const selectedVoice = voiceSelect.selectedOptions[0].getAtrribute(
-      "data.name"
+    const selectedVoice = voiceSelect.selectedOptions[0].getAttribute(
+      "data-name"
     );
 
     voices.forEach(voice => {
@@ -61,8 +60,25 @@ const speak = () => {
       }
     });
     speakText.rate = rate.value;
-    speakText.rate = rate.value;
-    //Speak
-    synth.speak = speakText;
+    speakText.pitch = pitch.value;
+    // Speak
+    synth.speak(speakText);
   }
 };
+
+// Events Listeners
+
+textForm.addEventListener("submit", e => {
+  e.preventDefault();
+  speak();
+  textInput.blur();
+});
+
+// Rate value change
+rate.addEventListener("change", e => (rateValue.textContent = rate.value));
+
+// Pitch value change
+pitch.addEventListener("change", e => (pitchValue.textContent = pitch.value));
+
+// Voice select change
+voiceSelect.addEventListener("change", e => speak());
